@@ -79,7 +79,7 @@ type traceQueryParameters struct {
 //     tags :== 'tags=' jsonMap
 func (p *queryParser) parse(r *http.Request) (*traceQueryParameters, error) {
 	service := r.FormValue(serviceParam)
-	if service == "" {
+	if service == "any" {
 		service = "*"
 	}
 

@@ -851,6 +851,20 @@ func TestSpanReader_buildServiceNameQuery(t *testing.T) {
 	})
 }
 
+func TestSpanReader_buildServiceNameQuery_wildcard(t *testing.T) {
+	expectedStr := `{ "wildcard": { "process.serviceName": { "wildcard": "*" }}}`
+	withSpanReader(func(r *spanReaderTest) {
+		serviceNameQuery := r.reader.buildServiceNameQuery("*")
+		actual, err := serviceNameQuery.Source()
+		require.NoError(t, err)
+
+		expected := make(map[string]interface{})
+		json.Unmarshal([]byte(expectedStr), &expected)
+
+		assert.EqualValues(t, expected, actual)
+	})
+}
+
 func TestSpanReader_buildOperationNameQuery(t *testing.T) {
 	expectedStr := `{ "match": { "operationName": { "query": "spook" }}}`
 	withSpanReader(func(r *spanReaderTest) {
