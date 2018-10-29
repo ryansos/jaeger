@@ -456,7 +456,10 @@ func (s *SpanReader) buildStartTimeQuery(startTimeMin time.Time, startTimeMax ti
 }
 
 func (s *SpanReader) buildServiceNameQuery(serviceName string) elastic.Query {
-	return elastic.NewMatchQuery(serviceNameField, serviceName)
+	if serviceName != "*" {
+		return elastic.NewMatchQuery(serviceNameField, serviceName)
+	}
+	return elastic.NewWildcardQuery(serviceNameField, serviceName)
 }
 
 func (s *SpanReader) buildOperationNameQuery(operationName string) elastic.Query {
