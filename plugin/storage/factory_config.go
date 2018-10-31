@@ -28,6 +28,8 @@ const (
 	// DependencyStorageTypeEnvVar is the name of the env var that defines the type of backend used for dependencies storage.
 	DependencyStorageTypeEnvVar = "DEPENDENCY_STORAGE_TYPE"
 
+	WildcardSearchTypeEnvVar = "WILDCARD_SEARCH"
+
 	spanStorageFlag = "--span-storage.type"
 )
 
@@ -36,6 +38,7 @@ type FactoryConfig struct {
 	SpanWriterTypes         []string
 	SpanReaderType          string
 	DependenciesStorageType string
+	WildcardSearch          string
 }
 
 // FactoryConfigFromEnvAndCLI reads the desired types of storage backends from SPAN_STORAGE_TYPE and
@@ -69,11 +72,18 @@ func FactoryConfigFromEnvAndCLI(args []string, log io.Writer) FactoryConfig {
 	if depStorageType == "" {
 		depStorageType = spanWriterTypes[0]
 	}
+
+	// Currently only supports wildcard searching for elasticsearch backend storage
+	wildcardSearch := os.Getenv(WildcardSearchTypeEnvVar)
+	if (wildcardSearch != "" && spanStorageType != elasticsearchStorageType) || wildcardSearch != "true" {
+		wildcardSearch = ""
+	}
 	// TODO support explicit configuration for readers
 	return FactoryConfig{
 		SpanWriterTypes:         spanWriterTypes,
 		SpanReaderType:          spanWriterTypes[0],
 		DependenciesStorageType: depStorageType,
+		WildcardSearch:          wildcardSearch,
 	}
 }
 

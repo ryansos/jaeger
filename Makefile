@@ -229,16 +229,16 @@ build-all-platforms: build-binaries-linux build-binaries-windows build-binaries-
 
 .PHONY: docker-images-only
 docker-images-only:
-	docker build -t $(DOCKER_NAMESPACE)/jaeger-cassandra-schema:${DOCKER_TAG} plugin/storage/cassandra/
-	@echo "Finished building jaeger-cassandra-schema =============="
-	docker build -t $(DOCKER_NAMESPACE)/jaeger-es-index-cleaner:${DOCKER_TAG} plugin/storage/es
-	@echo "Finished building jaeger-es-indices-clean =============="
-	for component in agent collector query ingester ; do \
-		docker build -t $(DOCKER_NAMESPACE)/jaeger-$$component:${DOCKER_TAG} cmd/$$component ; \
+	#docker build -t $(DOCKER_NAMESPACE)/jaeger-cassandra-schema:${DOCKER_TAG} plugin/storage/cassandra/
+	#@echo "Finished building jaeger-cassandra-schema =============="
+	#docker build -t $(DOCKER_NAMESPACE)/jaeger-es-index-cleaner:${DOCKER_TAG} plugin/storage/es
+	#@echo "Finished building jaeger-es-indices-clean =============="
+	for component in query; do \
+		docker build -t $(DOCKER_NAMESPACE)/forked-jaeger-$$component:${DOCKER_TAG} cmd/$$component ; \
 		echo "Finished building $$component ==============" ; \
 	done
-	docker build -t $(DOCKER_NAMESPACE)/test-driver:${DOCKER_TAG} crossdock/
-	@echo "Finished building test-driver ==============" ; \
+	#docker build -t $(DOCKER_NAMESPACE)/test-driver:${DOCKER_TAG} crossdock/
+	#@echo "Finished building test-driver ==============" ; \
 
 .PHONY: docker-push
 docker-push:

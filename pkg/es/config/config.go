@@ -45,6 +45,7 @@ type Configuration struct {
 	TagsFilePath      string
 	AllTagsAsFields   bool
 	TagDotReplacement string
+	WildcardSearch    string
 }
 
 // ClientBuilder creates new es.Client
@@ -57,6 +58,7 @@ type ClientBuilder interface {
 	GetTagsFilePath() string
 	GetAllTagsAsFields() bool
 	GetTagDotReplacement() string
+	GetWildcardSearch() string
 }
 
 // NewClient creates a new ElasticSearch client
@@ -149,6 +151,9 @@ func (c *Configuration) ApplyDefaults(source *Configuration) {
 	if c.BulkFlushInterval == 0 {
 		c.BulkFlushInterval = source.BulkFlushInterval
 	}
+	if c.WildcardSearch == "" {
+		c.WildcardSearch = source.WildcardSearch
+	}
 }
 
 // GetNumShards returns number of shards from Configuration
@@ -185,6 +190,11 @@ func (c *Configuration) GetAllTagsAsFields() bool {
 // the tag is stored as object field.
 func (c *Configuration) GetTagDotReplacement() string {
 	return c.TagDotReplacement
+}
+
+// GetWildcardSearch returns bool value indicating whether or not to allow wildcard search
+func (c *Configuration) GetWildcardSearch() string {
+	return c.WildcardSearch
 }
 
 // GetConfigs wraps the configs to feed to the ElasticSearch client init

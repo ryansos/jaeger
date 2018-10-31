@@ -48,6 +48,8 @@ const (
 	nestedLogFieldsField   = "logs.fields"
 	tagKeyField            = "key"
 	tagValueField          = "value"
+	wildcardQueryString    = "any"
+	wildcardSearchString   = "*"
 
 	defaultDocCount  = 10000 // the default elasticsearch allowed limit
 	defaultNumTraces = 100
@@ -93,6 +95,7 @@ type SpanReader struct {
 	spanIndexPrefix         string
 	serviceIndexPrefix      string
 	spanConverter           dbmodel.ToDomain
+	wildcardSearch          string
 }
 
 // SpanReaderParams holds constructor params for NewSpanReader
@@ -104,6 +107,7 @@ type SpanReaderParams struct {
 	serviceOperationStorage *ServiceOperationStorage
 	IndexPrefix             string
 	TagDotReplacement       string
+	WildcardSearch          string
 }
 
 // NewSpanReader returns a new SpanReader with a metrics.
@@ -116,6 +120,7 @@ func newSpanReader(p SpanReaderParams) *SpanReader {
 	if p.IndexPrefix != "" {
 		p.IndexPrefix += ":"
 	}
+	fmt.Println("Wildcard: ", p.WildcardSearch)
 	return &SpanReader{
 		ctx:                     ctx,
 		client:                  p.Client,
@@ -125,6 +130,7 @@ func newSpanReader(p SpanReaderParams) *SpanReader {
 		spanIndexPrefix:         p.IndexPrefix + spanIndex,
 		serviceIndexPrefix:      p.IndexPrefix + serviceIndex,
 		spanConverter:           dbmodel.NewToDomain(p.TagDotReplacement),
+		wildcardSearch:          p.WildcardSearch,
 	}
 }
 
@@ -456,10 +462,11 @@ func (s *SpanReader) buildStartTimeQuery(startTimeMin time.Time, startTimeMax ti
 }
 
 func (s *SpanReader) buildServiceNameQuery(serviceName string) elastic.Query {
-	if serviceName != "*" {
-		return elastic.NewMatchQuery(serviceNameField, serviceName)
+	s.logger.Info(s.wildcardSearch)
+	if s.wildcardSearch == "true" && serviceName == wildcardQueryString {
+		return elastic.NewWildcardQuery(serviceNameField, wildcardSearchString)
 	}
-	return elastic.NewWildcardQuery(serviceNameField, serviceName)
+	return elastic.NewMatchQuery(serviceNameField, serviceName)
 }
 
 func (s *SpanReader) buildOperationNameQuery(operationName string) elastic.Query {
