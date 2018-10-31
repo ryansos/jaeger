@@ -95,7 +95,7 @@ type SpanReader struct {
 	spanIndexPrefix         string
 	serviceIndexPrefix      string
 	spanConverter           dbmodel.ToDomain
-	wildcardSearch          string
+	wildcardSearch          bool
 }
 
 // SpanReaderParams holds constructor params for NewSpanReader
@@ -107,7 +107,7 @@ type SpanReaderParams struct {
 	serviceOperationStorage *ServiceOperationStorage
 	IndexPrefix             string
 	TagDotReplacement       string
-	WildcardSearch          string
+	WildcardSearch          bool
 }
 
 // NewSpanReader returns a new SpanReader with a metrics.
@@ -120,7 +120,6 @@ func newSpanReader(p SpanReaderParams) *SpanReader {
 	if p.IndexPrefix != "" {
 		p.IndexPrefix += ":"
 	}
-	fmt.Println("Wildcard: ", p.WildcardSearch)
 	return &SpanReader{
 		ctx:                     ctx,
 		client:                  p.Client,
@@ -462,8 +461,7 @@ func (s *SpanReader) buildStartTimeQuery(startTimeMin time.Time, startTimeMax ti
 }
 
 func (s *SpanReader) buildServiceNameQuery(serviceName string) elastic.Query {
-	s.logger.Info(s.wildcardSearch)
-	if s.wildcardSearch == "true" && serviceName == wildcardQueryString {
+	if s.wildcardSearch && serviceName == wildcardQueryString {
 		return elastic.NewWildcardQuery(serviceNameField, wildcardSearchString)
 	}
 	return elastic.NewMatchQuery(serviceNameField, serviceName)

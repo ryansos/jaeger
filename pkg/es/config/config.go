@@ -45,7 +45,7 @@ type Configuration struct {
 	TagsFilePath      string
 	AllTagsAsFields   bool
 	TagDotReplacement string
-	WildcardSearch    string
+	WildcardSearch    bool
 }
 
 // ClientBuilder creates new es.Client
@@ -58,7 +58,7 @@ type ClientBuilder interface {
 	GetTagsFilePath() string
 	GetAllTagsAsFields() bool
 	GetTagDotReplacement() string
-	GetWildcardSearch() string
+	GetWildcardSearch() bool
 }
 
 // NewClient creates a new ElasticSearch client
@@ -151,7 +151,7 @@ func (c *Configuration) ApplyDefaults(source *Configuration) {
 	if c.BulkFlushInterval == 0 {
 		c.BulkFlushInterval = source.BulkFlushInterval
 	}
-	if c.WildcardSearch == "" {
+	if !c.WildcardSearch {
 		c.WildcardSearch = source.WildcardSearch
 	}
 }
@@ -193,7 +193,7 @@ func (c *Configuration) GetTagDotReplacement() string {
 }
 
 // GetWildcardSearch returns bool value indicating whether or not to allow wildcard search
-func (c *Configuration) GetWildcardSearch() string {
+func (c *Configuration) GetWildcardSearch() bool {
 	return c.WildcardSearch
 }
 

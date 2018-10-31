@@ -81,7 +81,7 @@ func NewOptions(primaryNamespace string, otherNamespaces ...string) *Options {
 				BulkActions:       1000,
 				BulkFlushInterval: time.Millisecond * 200,
 				TagDotReplacement: "@",
-				WildcardSearch:    "true",
+				WildcardSearch:    true,
 			},
 			servers:   "http://127.0.0.1:9200",
 			namespace: primaryNamespace,
@@ -165,7 +165,7 @@ func addFlags(flagSet *flag.FlagSet, nsConfig *namespaceConfig) {
 		nsConfig.namespace+suffixTagDeDotChar,
 		nsConfig.TagDotReplacement,
 		"(experimental) The character used to replace dots (\".\") in tag keys stored as object fields.")
-	flagSet.String(
+	flagSet.Bool(
 		nsConfig.namespace+suffixWildcardSearch,
 		nsConfig.WildcardSearch,
 		"Allows for wildcard search on the service field")
@@ -195,7 +195,7 @@ func initFromViper(cfg *namespaceConfig, v *viper.Viper) {
 	cfg.AllTagsAsFields = v.GetBool(cfg.namespace + suffixTagsAsFieldsAll)
 	cfg.TagsFilePath = v.GetString(cfg.namespace + suffixTagsFile)
 	cfg.TagDotReplacement = v.GetString(cfg.namespace + suffixTagDeDotChar)
-	cfg.WildcardSearch = v.GetString(cfg.namespace + suffixWildcardSearch)
+	cfg.WildcardSearch = v.GetBool(cfg.namespace + suffixWildcardSearch)
 }
 
 // GetPrimary returns primary configuration.

@@ -22,4 +22,5 @@ cmd/ingester/ingester-linux
 cmd/query/query
 cmd/query/query-linux
 crossdock/crossdock-linux
+jaeger-ui/
 run-crossdock.log
