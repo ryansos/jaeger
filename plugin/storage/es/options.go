@@ -81,7 +81,7 @@ func NewOptions(primaryNamespace string, otherNamespaces ...string) *Options {
 				BulkActions:       1000,
 				BulkFlushInterval: time.Millisecond * 200,
 				TagDotReplacement: "@",
-				WildcardSearch:    true,
+				WildcardSearch:    false,
 			},
 			servers:   "http://127.0.0.1:9200",
 			namespace: primaryNamespace,
